@@ -6,6 +6,21 @@ var Enemy = function() {
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
+
+    // Initial position should be on the left outside the canvas.
+    // It should be in a random row between 1 and 3 (both inclusive).
+    this.loc = {
+        'x': global.tileDim.x * -1,
+        'y': global.tileDim.y * (Math.random() * 3 + 1);
+    };
+
+    this.dim = {
+        'x': 98,
+        'y': 77
+    }
+
+    // Speed is a random value between 1 and 3 (both inclusive).
+    this.speed = Math.random() * 3 + 1;
 };
 
 // Update the enemy's position, required method for game
@@ -14,17 +29,19 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    this.loc.x += this.speed;
 };
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    var imgLoc = transformEntityLocToPic(this.location);
+    ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 };
 
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-
+// player dimension {x: 66px, y: 77px}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
@@ -44,3 +61,21 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+// Helper function to check collision between two objects
+function isCollision(first, second) {
+    if(!(first && first.location && second && second.location)) {
+        // invalid objects.
+        var err = 'Invalid objects collision check.';
+        console.log(err);
+        throw Error(err);
+    }
+}
+
+// Helper function to transform entity location to image location.
+function transformEntityLocToPic(location) {
+    return {
+        'x': location.x;
+        'y': location.y - 77;
+    };
+}

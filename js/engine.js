@@ -23,7 +23,11 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        tileDim = {
+            'x': 101,
+            'y': 83
+        };
 
     canvas.width = 505;
     canvas.height = 606;
@@ -132,7 +136,8 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]),
+                    col * tileDim.x, row * tileDim.y);
             }
         }
 
@@ -180,4 +185,7 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
+
+    /* Make tileDim global to aid placing and moving entities */
+    global.tileDim = tileDim;
 })(this);
