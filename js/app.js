@@ -113,10 +113,10 @@ Player.prototype.handleInput = function(key) {
             nextY = -1;
             break;
         case 'right':
-            nextY = 1;
+            nextX = 1;
             break;
         case 'down':
-            nextY = -1;
+            nextY = 1;
         default:
             break;
     }
