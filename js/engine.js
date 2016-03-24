@@ -121,8 +121,8 @@ var Engine = (function(global) {
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < canvasTiles.rows; row++) {
-            for (col = 0; col < canvasTiles.cols; col++) {
+        for (row = 0; row < CANVAS_TILES.rows; row++) {
+            for (col = 0; col < CANVAS_TILES.cols; col++) {
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.

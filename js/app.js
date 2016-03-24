@@ -1,9 +1,12 @@
-// Global objects
-tileDim = {
+// Constants
+// Defines the shift required in entity location to place it correctly.
+var IMAGE_LOCATION_SHIFT = 40;
+
+var TILE_DIM = {
     x: 101,
     y: 83
 };
-var canvasTiles = {
+var CANVAS_TILES = {
     rows: 6,
     cols: 5
 };
@@ -20,8 +23,8 @@ var Enemy = function() {
     // Initial position should be on the left outside the canvas.
     // It should be in a random row between 1 and 3 (both inclusive).
     this.loc = {
-        'x': tileDim.x * -1,
-        'y': tileDim.y * (Math.random() * 3 + 1)
+        'x': TILE_DIM.x * -1,
+        'y': TILE_DIM.y * Math.floor(Math.random() * 3 + 1)
     };
 
     this.dim = {
@@ -68,8 +71,8 @@ var Player = function() {
 // Initial location for the player will be in the middle bottom tile.
 Player.prototype.getInitLocation = function() {
     return {
-        x: canvasTiles.cols * tileDim.x / 2,
-        y: (canvasTiles.rows - 1) * tileDim.y
+        x: CANVAS_TILES.cols * TILE_DIM.x / 2,
+        y: (CANVAS_TILES.rows - 1) * TILE_DIM.y
     }
 };
 
@@ -106,8 +109,8 @@ Player.prototype.handleInput = function(key) {
             break;
     }
 
-    nextX = nextX * titeDim.x;
-    nextY = nextY * titleDim.y;
+    nextX = nextX * TILE_DIM.x;
+    nextY = nextY * TILE_DIM.y;
     if(!isInBoundary(this.loc.x + nextX, this.loc.y + nextY)) {
         // Reset nextX and nextY as player cannot move
         nextX = 0;
@@ -161,7 +164,7 @@ function isInBoundary(x, y) {
 function transformEntityLocToPic(location) {
     return {
         'x': location.x,
-        'y': location.y - 77
+        'y': location.y - IMAGE_LOCATION_SHIFT
     };
 }
 
