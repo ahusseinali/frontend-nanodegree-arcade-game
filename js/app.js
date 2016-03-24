@@ -44,7 +44,7 @@ Enemy.prototype.update = function(dt) {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-    var imgLoc = transformEntityLocToPic(this.location);
+    var imgLoc = transformEntityLocToPic(this.loc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 };
 
@@ -83,7 +83,7 @@ Player.prototype.update = function() {
 }
 
 Player.prototype.render = function() {
-    var imgLoc = transformEntityLocToPic(this.location);
+    var imgLoc = transformEntityLocToPic(this.loc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 };
 
