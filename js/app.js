@@ -163,10 +163,27 @@ function isCollision(first, second) {
     }
 }
 
-function isInBoundary(x, y) {
+// Check if location is out of a certain boundary of the canvas
+// If no boundary is defined, check is made for all boundaries
+function isInBoundary(x, y, boundary) {
     var maxWidth = CANVAS_TILES.cols * TILE_DIM.x;
     var maxHeight = CANVAS_TILES.rows * TILE_DIM.y;
-    return (x >= 0 && x < maxWidth && y >= 0 && y < maxHeight);
+    if(!boundary) {
+        return (x >= 0 && x < maxWidth && y >= 0 && y < maxHeight);
+    }
+
+    switch(boundary) {
+        case "top":
+            return y >= 0;
+        case "right":
+            return x < maxWidth;
+        case "bottom":
+            return y < maxHeight;
+        case "left":
+            return x >= 0;
+        default:
+            throw Error("Invalid boundary check.");
+    };
 }
 
 // Helper function to transform entity location to image location.
