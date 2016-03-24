@@ -57,6 +57,33 @@ Player.prototype.getInitLocation = function() {
     }
 };
 
+Player.prototype.handleInput = function(key) {
+    var potentialMove {
+        x: 0,
+        y: 0
+    };
+    switch(key) {
+        case 'left':
+            potentialMove.x = -1;
+            break;
+        case 'up':
+            potentialMove.y = -1;
+            break;
+        case 'right':
+            potentialMove.x = 1;
+            break;
+        case 'down':
+            potentialMove.y = -1;
+        default:
+            break;
+    }
+
+    if(isInBoundary(this.loc.x + potentialMove.x, this.loc.y + potentialMove.y)) {
+        this.loc.x += potentialMove.x * tileDim.x;
+        this.loc.y += potentialMove.y * tileDim.y;
+    }
+}
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
