@@ -28,7 +28,7 @@ var Engine = (function(global) {
             'x': 101,
             'y': 83
         };
-        canvasTiles {
+        canvasTiles = {
             'rows': 6,
             'cols': 5
         }

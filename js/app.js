@@ -11,7 +11,7 @@ var Enemy = function() {
     // It should be in a random row between 1 and 3 (both inclusive).
     this.loc = {
         'x': global.tileDim.x * -1,
-        'y': global.tileDim.y * (Math.random() * 3 + 1);
+        'y': global.tileDim.y * (Math.random() * 3 + 1)
     };
 
     this.dim = {
