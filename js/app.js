@@ -47,6 +47,12 @@ var Player = function() {
 
     // Player initial location
     this.loc = this.getInitialLocation();
+
+    // Potential Move is used to update player position
+    this.potentialMove = {
+        x: 0,
+        y: 0
+    };
 }
 
 // Initial location for the player will be in the middle bottom tile.
@@ -57,31 +63,45 @@ Player.prototype.getInitLocation = function() {
     }
 };
 
+Player.prototype.update = function() {
+    this.loc.x += this.potentialMove.x;
+    this.loc.y += this.potentialMove.y;
+
+    // Reset potentialMove values till the next key stroke
+    this.potentialMove.x = 0;
+    this.potentialMove.y = 0;
+}
+
 Player.prototype.handleInput = function(key) {
-    var potentialMove {
-        x: 0,
-        y: 0
-    };
+    var nextX = 0;
+    var nextY = 0;
     switch(key) {
         case 'left':
-            potentialMove.x = -1;
+            nextX = -1;
             break;
         case 'up':
-            potentialMove.y = -1;
+            nextY = -1;
             break;
         case 'right':
-            potentialMove.x = 1;
+            nextY = 1;
             break;
         case 'down':
-            potentialMove.y = -1;
+            nextY = -1;
         default:
             break;
     }
 
-    if(isInBoundary(this.loc.x + potentialMove.x, this.loc.y + potentialMove.y)) {
-        this.loc.x += potentialMove.x * tileDim.x;
-        this.loc.y += potentialMove.y * tileDim.y;
+    nextX = nextX * titeDim.x;
+    nextY = nextY * titleDim.y;
+    if(!isInBoundary(this.loc.x + nextX, this.loc.y + nextY)) {
+        // Reset nextX and nextY as player cannot move
+        nextX = 0;
+        nextY = 0;
     }
+
+    // Set potentialMove to nextX and nextY
+    this.potentialMove.x = nextX;
+    this.potentialMove.y = nextY;
 }
 
 // Now instantiate your objects.
