@@ -21,19 +21,22 @@ var Enemy = function() {
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
 
-    // Initial position should be on the left outside the canvas.
-    // It should be in a random row between 1 and 3 (both inclusive).
-    this.loc = {
-        'x': TILE_DIM.x * -1,
-        'y': TILE_DIM.y * Math.floor(Math.random() * 3 + 1)
-    };
-
     this.dim = {
         'x': 98,
         'y': 77
     }
 
-    // Speed is a random value between 5 and 20 (both inclusive).
+    // Initialize Enemy's location and speed
+    this.initLocationAndSpeed();
+};
+
+// Initialize Location to be outside Canvas to the left at random row from 1-3
+// Initialize speed to be random value between 200 and 450
+Enemy.prototype.initLocationAndSpeed = function() {
+    this.loc = {
+        x: TILE_DIM.x * -1,
+        y: TILE_DIM.y * Math.floor(Math.random() * 3 + 1)
+    };
     this.speed = Math.floor(Math.random() * 250 + 200);
 };
 
