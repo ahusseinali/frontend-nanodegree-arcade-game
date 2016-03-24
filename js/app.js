@@ -48,8 +48,8 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.loc.x += this.speed * dt;
 
-    // Reset enemy location and speed if it gets out of screen
-    if(!isInBoundary(this.loc.x, this.loc.y)) {
+    // Reset enemy location and speed if it gets out of the right side of screen
+    if(!isInBoundary(this.loc.x, this.loc.y, 'right')) {
         this.initLocationAndSpeed();
     }
 };
