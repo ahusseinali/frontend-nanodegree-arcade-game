@@ -1,6 +1,7 @@
 // Constants
 // Defines the shift required in entity location to place it correctly.
 var IMAGE_LOCATION_SHIFT = 28;
+var ENEMIES_COUNT = 3;
 
 var TILE_DIM = {
     x: 101,
@@ -58,22 +59,26 @@ Enemy.prototype.render = function() {
 var Player = function() {
     this.sprite = 'images/char-boy.png';
 
-    // Player initial location
-    this.loc = this.getInitLocation();
+    // Player location
+    this.loc = {
+        x: 0,
+        y: 0
+    };
 
     // Potential Move is used to update player position
     this.potentialMove = {
         x: 0,
         y: 0
     };
+
+    // Initialize Player location
+    this.initLocation();
 }
 
-// Initial location for the player will be in the middle bottom tile.
-Player.prototype.getInitLocation = function() {
-    return {
-        x: CANVAS_TILES.cols * TILE_DIM.x / 2,
-        y: (CANVAS_TILES.rows - 1) * TILE_DIM.y
-    }
+// Initialize Player Location.
+Player.prototype.initLocation = function() {
+    this.loc.x = CANVAS_TILES.cols * TILE_DIM.x / 2;
+    this.loc.y = (CANVAS_TILES.rows - 1) * TILE_DIM.y;
 };
 
 Player.prototype.update = function() {
@@ -169,7 +174,7 @@ function transformEntityLocToPic(location) {
 }
 
 function generateEnemies() {
-    for(var i=0; i < 3; i++) {
+    for(var i=0; i < ENEMIES_COUNT; i++) {
         allEnemies.push(new Enemy());
     }
 }
