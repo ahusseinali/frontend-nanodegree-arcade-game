@@ -42,7 +42,20 @@ Enemy.prototype.render = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 // player dimension {x: 66px, y: 77px}
+var Player = function() {
+    this.sprite = 'images/char-boy.png';
 
+    // Player initial location
+    this.loc = this.getInitialLocation();
+}
+
+// Initial location for the player will be in the middle bottom tile.
+Player.prototype.getInitLocation = function() {
+    return {
+        x: canvasTiles.cols * tileDim.x / 2;
+        y: (canvasTiles.rows - 1) * tileDim.y;
+    }
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
