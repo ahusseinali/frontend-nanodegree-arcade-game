@@ -23,15 +23,7 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime,
-        tileDim = {
-            'x': 101,
-            'y': 83
-        };
-        canvasTiles = {
-            'rows': 6,
-            'cols': 5
-        }
+        lastTime;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -187,8 +179,4 @@ var Engine = (function(global) {
      * from within their app.js files.
      */
     global.ctx = ctx;
-
-    /* Make tileDim global to aid placing and moving entities */
-    global.tileDim = tileDim;
-    global.canvasTiles = canvasTiles;
 })(this);

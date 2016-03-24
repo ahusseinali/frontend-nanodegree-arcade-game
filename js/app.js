@@ -1,3 +1,13 @@
+// Global objects
+tileDim = {
+    x: 101,
+    y: 83
+};
+var canvasTiles = {
+    rows: 6,
+    cols: 5
+};
+
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -10,8 +20,8 @@ var Enemy = function() {
     // Initial position should be on the left outside the canvas.
     // It should be in a random row between 1 and 3 (both inclusive).
     this.loc = {
-        'x': global.tileDim.x * -1,
-        'y': global.tileDim.y * (Math.random() * 3 + 1)
+        'x': tileDim.x * -1,
+        'y': tileDim.y * (Math.random() * 3 + 1)
     };
 
     this.dim = {
@@ -46,7 +56,7 @@ var Player = function() {
     this.sprite = 'images/char-boy.png';
 
     // Player initial location
-    this.loc = this.getInitialLocation();
+    this.loc = this.getInitLocation();
 
     // Potential Move is used to update player position
     this.potentialMove = {
@@ -58,8 +68,8 @@ var Player = function() {
 // Initial location for the player will be in the middle bottom tile.
 Player.prototype.getInitLocation = function() {
     return {
-        x: canvasTiles.cols * tileDim.x / 2;
-        y: (canvasTiles.rows - 1) * tileDim.y;
+        x: canvasTiles.cols * tileDim.x / 2,
+        y: (canvasTiles.rows - 1) * tileDim.y
     }
 };
 
@@ -150,8 +160,8 @@ function isInBoundary(x, y) {
 // Helper function to transform entity location to image location.
 function transformEntityLocToPic(location) {
     return {
-        'x': location.x;
-        'y': location.y - 77;
+        'x': location.x,
+        'y': location.y - 77
     };
 }
 
