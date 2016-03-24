@@ -32,8 +32,8 @@ var Enemy = function() {
         'y': 77
     }
 
-    // Speed is a random value between 1 and 3 (both inclusive).
-    this.speed = Math.random() * 3 + 1;
+    // Speed is a random value between 5 and 20 (both inclusive).
+    this.speed = Math.floor(Math.random() * 250 + 200);
 };
 
 // Update the enemy's position, required method for game
