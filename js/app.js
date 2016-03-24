@@ -12,6 +12,9 @@ var CANVAS_TILES = {
     cols: 5
 };
 
+// Defines the possible speed range of enemies
+var ENEMY_SPEEDS = [100, 250, 500];
+
 // Enemies our player must avoid
 var Enemy = function() {
     // Variables applied to each of our instances go here,
@@ -37,7 +40,7 @@ Enemy.prototype.initLocationAndSpeed = function() {
         x: TILE_DIM.x * -1,
         y: TILE_DIM.y * Math.floor(Math.random() * 3 + 1)
     };
-    this.speed = Math.floor(Math.random() * 250 + 200);
+    this.speed = ENEMY_SPEEDS[Math.floor(Math.random() * 3)];
 };
 
 // Update the enemy's position, required method for game
