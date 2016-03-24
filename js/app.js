@@ -1,6 +1,6 @@
 // Constants
 // Defines the shift required in entity location to place it correctly.
-var IMAGE_LOCATION_SHIFT = 40;
+var IMAGE_LOCATION_SHIFT = 28;
 
 var TILE_DIM = {
     x: 101,

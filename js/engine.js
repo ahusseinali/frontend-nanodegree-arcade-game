@@ -131,7 +131,7 @@ var Engine = (function(global) {
                  * we're using them over and over.
                  */
                 ctx.drawImage(Resources.get(rowImages[row]),
-                    col * tileDim.x, row * tileDim.y);
+                    col * TILE_DIM.x, row * TILE_DIM.y);
             }
         }
 
