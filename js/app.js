@@ -72,6 +72,11 @@ Player.prototype.update = function() {
     this.potentialMove.y = 0;
 }
 
+Player.prototype.render = function() {
+    var imgLoc = transformEntityLocToPic(this.location);
+    ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
+};
+
 Player.prototype.handleInput = function(key) {
     var nextX = 0;
     var nextY = 0;
