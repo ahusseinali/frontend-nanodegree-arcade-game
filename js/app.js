@@ -62,12 +62,6 @@ Enemy.prototype.render = function() {
 var Player = function() {
     this.sprite = 'images/char-boy.png';
 
-    // Player location
-    this.loc = {
-        x: 0,
-        y: 0
-    };
-
     // Potential Move is used to update player position
     this.potentialMove = {
         x: 0,
@@ -80,8 +74,10 @@ var Player = function() {
 
 // Initialize Player Location.
 Player.prototype.initLocation = function() {
-    this.loc.x = CANVAS_TILES.cols * TILE_DIM.x / 2;
-    this.loc.y = (CANVAS_TILES.rows - 1) * TILE_DIM.y;
+    this.loc = {
+        x: CANVAS_TILES.cols * TILE_DIM.x / 2,
+        y: (CANVAS_TILES.rows - 1) * TILE_DIM.y
+    };
 };
 
 Player.prototype.update = function() {
