@@ -43,6 +43,7 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 // player dimension {x: 66px, y: 77px}
 
+
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
@@ -70,6 +71,12 @@ function isCollision(first, second) {
         console.log(err);
         throw Error(err);
     }
+}
+
+function isInBoundary(x, y) {
+    var maxWidth = canvasTiles.cols * tileDim.x;
+    var maxHeight = canvasTiles.rows * tileDim.y;
+    return (x >= 0 && x < maxWidth && y >= 0 && y < maxHeight);
 }
 
 // Helper function to transform entity location to image location.

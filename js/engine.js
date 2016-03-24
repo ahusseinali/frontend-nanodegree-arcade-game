@@ -28,6 +28,10 @@ var Engine = (function(global) {
             'x': 101,
             'y': 83
         };
+        canvasTiles {
+            'rows': 6,
+            'cols': 5
+        }
 
     canvas.width = 505;
     canvas.height = 606;
@@ -119,16 +123,14 @@ var Engine = (function(global) {
                 'images/grass-block.png',   // Row 1 of 2 of grass
                 'images/grass-block.png'    // Row 2 of 2 of grass
             ],
-            numRows = 6,
-            numCols = 5,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array, draw the correct image for that
          * portion of the "grid"
          */
-        for (row = 0; row < numRows; row++) {
-            for (col = 0; col < numCols; col++) {
+        for (row = 0; row < canvasTiles.rows; row++) {
+            for (col = 0; col < canvasTiles.cols; col++) {
                 /* The drawImage function of the canvas' context element
                  * requires 3 parameters: the image to draw, the x coordinate
                  * to start drawing and the y coordinate to start drawing.
@@ -188,4 +190,5 @@ var Engine = (function(global) {
 
     /* Make tileDim global to aid placing and moving entities */
     global.tileDim = tileDim;
+    global.canvasTiles = canvasTiles;
 })(this);
