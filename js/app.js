@@ -75,7 +75,7 @@ var Player = function() {
 // Initialize Player Location.
 Player.prototype.initLocation = function() {
     this.loc = {
-        x: CANVAS_TILES.cols * TILE_DIM.x / 2,
+        x: CANVAS_TILES.cols * (TILE_DIM.x - 20) / 2,
         y: (CANVAS_TILES.rows - 1) * TILE_DIM.y
     };
 };
