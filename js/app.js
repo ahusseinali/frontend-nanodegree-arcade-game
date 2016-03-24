@@ -47,6 +47,11 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.loc.x += this.speed * dt;
+
+    // Reset enemy location and speed if it gets out of screen
+    if(!isInBoundary(this.loc.x, this.loc.y)) {
+        this.initLocationAndSpeed();
+    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -159,8 +164,8 @@ function isCollision(first, second) {
 }
 
 function isInBoundary(x, y) {
-    var maxWidth = canvasTiles.cols * tileDim.x;
-    var maxHeight = canvasTiles.rows * tileDim.y;
+    var maxWidth = CANVAS_TILES.cols * TILE_DIM.x;
+    var maxHeight = CANVAS_TILES.rows * TILE_DIM.y;
     return (x >= 0 && x < maxWidth && y >= 0 && y < maxHeight);
 }
 
