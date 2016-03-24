@@ -173,24 +173,24 @@ function isInBoundary(x, y, boundary) {
     }
 
     switch(boundary) {
-        case "top":
+        case 'top':
             return y >= 0;
-        case "right":
+        case 'right':
             return x < maxWidth;
-        case "bottom":
+        case 'bottom':
             return y < maxHeight;
-        case "left":
+        case 'left':
             return x >= 0;
         default:
-            throw Error("Invalid boundary check.");
+            throw Error('Invalid boundary check.');
     };
 }
 
 // Helper function to transform entity location to image location.
 function transformEntityLocToPic(location) {
     return {
-        'x': location.x,
-        'y': location.y - IMAGE_LOCATION_SHIFT
+        x: location.x,
+        y: location.y - IMAGE_LOCATION_SHIFT
     };
 }
 
