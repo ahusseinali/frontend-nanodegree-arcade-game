@@ -15,6 +15,14 @@ var CANVAS_TILES = {
 // Defines the possible speed range of enemies
 var ENEMY_SPEEDS = [100, 250, 500];
 
+var PLAYER_SPRTIES = [
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
+];
+
 // Base class for all entities in game
 var Entity = function(sprite, dim) {
     // The sprite used to display entity.
@@ -151,6 +159,39 @@ Player.prototype.handleInput = function(key) {
     // Set potentialMove to nextX and nextY
     this.potentialMove.x = nextX;
     this.potentialMove.y = nextY;
+}
+
+StaticPlayer = function(sprite, loc, dim) {
+    this.sprite = sprite;
+    this.loc = loc;
+    this.dim = dim;
+    // Dimensions to put all sprites next to each other.
+    this.dim = {
+        x: Math.floor(CANVAS_TILES.cols * TILE_DIM.x / PLAYER_SPRTIES.length),
+        y: 120
+    };
+    // specify if player is selected or not.
+    this.selected = false;
+}
+
+StaticPlayer.prototype.toggleSelect = function() {
+    this.selected = !this.selected;
+}
+
+StaticPlayer.prototype.render = function() {
+    if(this.selected) {
+        ctx.strokeColor = 'red';
+        ctx.drawRect(loc.x, loc.y, dim.x, dim.y);
+    }
+
+    // Centralize the sprite in the rectangle space.
+    var imgLoc = {
+        x: this.loc.x + ((this.dim.x - 66) / 2),
+        y: this.loc.y + ((this.dim.y - 77) / 2)
+    };
+
+    imgLoc = transformEntityLocToPic(imgLoc);
+    ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 }
 
 // Now instantiate your objects.
