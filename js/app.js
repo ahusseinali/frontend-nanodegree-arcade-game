@@ -15,23 +15,29 @@ var CANVAS_TILES = {
 // Defines the possible speed range of enemies
 var ENEMY_SPEEDS = [100, 250, 500];
 
+// Base class for all entities in game
+var Entity = function(sprite, dim) {
+    // The sprite used to display entity.
+    this.sprite = sprite;
+    this.dim = dim;
+    this.loc = {x: 0, y: 0};
+}
+
+Entity.prototype.render = function() {
+    var imgLoc = transformEntityLocToPic(this.loc);
+    ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
+}
+
 // Enemies our player must avoid
 var Enemy = function() {
-    // Variables applied to each of our instances go here,
-    // we've provided one for you to get started
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
-    this.sprite = 'images/enemy-bug.png';
-
-    this.dim = {
-        'x': 98,
-        'y': 77
-    }
+    Entity.call(this, 'images/enemy-bug.png', {x: 98, y: 77});
 
     // Initialize Enemy's location and speed
     this.initLocationAndSpeed();
 };
+
+Enemy.prototype = Object.create(Entity.prototype);
+Enemy.prototype.constructor = Enemy;
 
 // Initialize Location to be outside Canvas to the left at random row from 1-3
 // Initialize speed to be random value between 200 and 450
@@ -66,27 +72,16 @@ Enemy.prototype.update = function(dt, player) {
     }
 };
 
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    var imgLoc = transformEntityLocToPic(this.loc);
-    ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
-};
-
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-    this.sprite = 'images/char-boy.png';
+    Entity.call(this, 'images/char-boy.png', {x: 66, y: 77});
 
     // Potential Move is used to update player position
     this.potentialMove = {
         x: 0,
         y: 0
-    };
-
-    this.dim = {
-        x: 66,
-        y: 77
     };
 
     // Flag to indicate if player should be reset.
@@ -95,6 +90,9 @@ var Player = function() {
     // Initialize Player location
     this.initLocation();
 }
+
+Player.prototype = Object.create(Entity.prototype);
+Player.prototype.constructor = Player;
 
 // Initialize Player Location.
 Player.prototype.initLocation = function() {
@@ -122,11 +120,6 @@ Player.prototype.update = function() {
     this.potentialMove.x = 0;
     this.potentialMove.y = 0;
 }
-
-Player.prototype.render = function() {
-    var imgLoc = transformEntityLocToPic(this.loc);
-    ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
-};
 
 Player.prototype.handleInput = function(key) {
     var nextX = 0;
