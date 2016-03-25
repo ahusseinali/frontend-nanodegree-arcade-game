@@ -52,7 +52,11 @@ Enemy.prototype.update = function(dt, player) {
     this.loc.x += this.speed * dt;
 
     // Check if enemy collides with player. Set Player isHit flag if collision happens.
-    if(isCollision(this, player)) {
+    var nextPlayerLoc = {
+        x: player.loc.x + player.potentialMove.x,
+        y: player.loc.y + player.potentialMove.y
+    };
+    if(isCollision(this.loc, this.dim, nextPlayerLoc, player.dim)) {
         player.isHit = true;
     }
 
@@ -179,18 +183,18 @@ document.addEventListener('keyup', function(e) {
 });
 
 // Helper function to check collision between two objects
-function isCollision(first, second) {
+function isCollision(loc1, dim1, loc2, dim2) {
     // Define corner points for both shapes
     // These are the critical points for comparison.
-    var firstP1 = first.loc;
+    var firstP1 = loc1;
     var firstP2 = {
-        x: first.loc.x + first.dim.x,
-        y: first.loc.y + first.dim.y
+        x: loc1.x + dim1.x,
+        y: loc1.y + dim1.y
     };
-    var secondP1 = second.loc;
+    var secondP1 = loc2;
     var secondP2 = {
-        x: second.loc.x + second.dim.x,
-        y: second.loc.y + second.dim.y
+        x: loc2.x + dim2.x,
+        y: loc2.y + dim2.y
     };
 
     return !(firstP2.x < secondP1.x
