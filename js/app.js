@@ -45,11 +45,16 @@ Enemy.prototype.initLocationAndSpeed = function() {
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
-Enemy.prototype.update = function(dt) {
+Enemy.prototype.update = function(dt, player) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
     this.loc.x += this.speed * dt;
+
+    // Check if enemy collides with player. Set Player isHit flag if collision happens.
+    if(isCollision(this, player)) {
+        player.isHit = true;
+    }
 
     // Reset enemy location and speed if it gets out of the right side of screen
     if(!isInBoundary(this.loc.x, this.loc.y, 'right')) {
@@ -66,7 +71,6 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-// player dimension {x: 66px, y: 77px}
 var Player = function() {
     this.sprite = 'images/char-boy.png';
 
@@ -75,6 +79,14 @@ var Player = function() {
         x: 0,
         y: 0
     };
+
+    this.dim = {
+        x: 66,
+        y: 77
+    };
+
+    // Flag to indicate if player should be reset.
+    this.isHit = false;
 
     // Initialize Player location
     this.initLocation();
@@ -89,8 +101,18 @@ Player.prototype.initLocation = function() {
 };
 
 Player.prototype.update = function() {
-    this.loc.x += this.potentialMove.x;
-    this.loc.y += this.potentialMove.y;
+    if(this.isHit) {
+        this.initLocation();
+        this.isHit = false;
+    } else {
+        this.loc.x += this.potentialMove.x;
+        this.loc.y += this.potentialMove.y;
+    }
+
+    // Check if location is at the sea row (first row)
+    if(this.loc.y < TILE_DIM.y) {
+        this.initLocation();
+    }
 
     // Reset potentialMove values till the next key stroke
     this.potentialMove.x = 0;
@@ -158,12 +180,23 @@ document.addEventListener('keyup', function(e) {
 
 // Helper function to check collision between two objects
 function isCollision(first, second) {
-    if(!(first && first.location && second && second.location)) {
-        // invalid objects.
-        var err = 'Invalid objects collision check.';
-        console.log(err);
-        throw Error(err);
-    }
+    // Define corner points for both shapes
+    // These are the critical points for comparison.
+    var firstP1 = first.loc;
+    var firstP2 = {
+        x: first.loc.x + first.dim.x,
+        y: first.loc.y + first.dim.y
+    };
+    var secondP1 = second.loc;
+    var secondP2 = {
+        x: second.loc.x + second.dim.x,
+        y: second.loc.y + second.dim.y
+    };
+
+    return !(firstP2.x < secondP1.x
+        || firstP1.x > secondP2.x
+        || firstP2.y < secondP1.y
+        || firstP1.y > secondP2.y);
 }
 
 // Check if location is out of a certain boundary of the canvas
