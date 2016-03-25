@@ -165,11 +165,7 @@ StaticPlayer = function(sprite, loc, dim) {
     this.sprite = sprite;
     this.loc = loc;
     this.dim = dim;
-    // Dimensions to put all sprites next to each other.
-    this.dim = {
-        x: Math.floor(CANVAS_TILES.cols * TILE_DIM.x / PLAYER_SPRTIES.length),
-        y: 120
-    };
+
     // specify if player is selected or not.
     this.selected = false;
 }
@@ -193,6 +189,38 @@ StaticPlayer.prototype.render = function() {
     imgLoc = transformEntityLocToPic(imgLoc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 }
+
+// ObjectController handles update and render requests and pass it to the proper objects
+ObjectController = function() {
+    this.mode = 'player-select';
+    this.player = null;
+    this.allEnemies = [];
+    this.staticPlayers = [];
+
+    // Load static players at the begining
+    this.LoadPlayerSelect();
+}
+
+ObjectController.prototype.loadPlayerSelect = function() {
+    var initX = 25;  // Margin to the right and left of all sprites
+    var initY = 243; // (Canvas Height - Static Player Height) / 2
+    var step = Math.floor((CANVAS_TILES.cols * TILE_DIM.x - 50) / PLAYER_SPRTIES.length);
+    PLAYER_SPRTIES.forEach(function(sprite) {
+        var loc = {
+            x: initX,
+            y: initY
+        };
+        var dim = {
+            x: step,
+            y: 120
+        };
+        this.staticPlayers.push(new StaticPlayer(sprite, loc, dim));
+        initX += step;
+    });
+
+    // Make first player selected by default
+    this.staticPlayers[0].toggleSelect();
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
