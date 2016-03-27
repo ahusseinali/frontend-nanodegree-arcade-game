@@ -191,8 +191,9 @@ StaticPlayer.prototype.render = function() {
 }
 
 // ObjectController handles update and render requests and pass it to the proper objects
+// Modes include: select, game
 ObjectController = function() {
-    this.mode = 'player-select';
+    this.mode = 'select';
     this.player = null;
     this.allEnemies = [];
     this.staticPlayers = [];
@@ -222,6 +223,63 @@ ObjectController.prototype.loadPlayerSelect = function() {
     // Make first player selected by default
     this.staticPlayers[0].toggleSelect();
 };
+
+// Updates enemies position and player position in game mode.
+ObjectController.prototype.update = function(dt) {
+    if(this.mode == 'game') {
+        this.allEnemies.forEach(function(enemy) {
+            enemy.update(dt, this.player);
+        });
+        this.player.update();
+    }
+};
+
+ObjectController.prototype.render = function() {
+    ctx.clearRect(0, 0, 505, 606);  // TODO: Make Canvas Width and Height global
+    if(this.mode == 'select') {
+        // Clear the canvas and draw all static players
+        this.staticPlayers.forEach(function(player) {
+            player.render();
+        });
+    } else {
+        //
+    }
+};
+
+// Renders map tiles.
+// TODO: Create Map Class.
+ObjectController.prototype._renderMap = function() {
+    /* This array holds the relative URL to the image used
+     * for that particular row of the game level.
+     */
+    var rowImages = [
+        'images/water-block.png',   // Top row is water
+        'images/stone-block.png',   // Row 1 of 3 of stone
+        'images/stone-block.png',   // Row 2 of 3 of stone
+        'images/stone-block.png',   // Row 3 of 3 of stone
+        'images/grass-block.png',   // Row 1 of 2 of grass
+        'images/grass-block.png'    // Row 2 of 2 of grass
+    ],
+    row, col;
+
+    /* Loop through the number of rows and columns we've defined above
+     * and, using the rowImages array, draw the correct image for that
+     * portion of the "grid"
+     */
+    for (row = 0; row < CANVAS_TILES.rows; row++) {
+        for (col = 0; col < CANVAS_TILES.cols; col++) {
+            /* The drawImage function of the canvas' context element
+             * requires 3 parameters: the image to draw, the x coordinate
+             * to start drawing and the y coordinate to start drawing.
+             * We're using our Resources helpers to refer to our images
+             * so that we get the benefits of caching these images, since
+             * we're using them over and over.
+             */
+            ctx.drawImage(Resources.get(rowImages[row]),
+                col * TILE_DIM.x, row * TILE_DIM.y);
+        }
+    }
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
