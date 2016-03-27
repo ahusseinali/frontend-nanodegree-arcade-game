@@ -242,7 +242,12 @@ ObjectController.prototype.render = function() {
             player.render();
         });
     } else {
-        //
+        //Render the map, then render enemies and player
+        this._renderMap();
+        this.allEnemies.forEach(function(enemy) {
+            enemy.render();
+        });
+        this.player.render();
     }
 };
 
@@ -279,7 +284,14 @@ ObjectController.prototype._renderMap = function() {
                 col * TILE_DIM.x, row * TILE_DIM.y);
         }
     }
-}
+};
+
+ObjectController.prototype._generateGameEntities = function() {
+    for(var i=0; i < ENEMIES_COUNT; i++) {
+        this.allEnemies.push(new Enemy());
+    }
+    this.player = new Player();
+};
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
