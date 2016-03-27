@@ -83,8 +83,8 @@ Enemy.prototype.update = function(dt, player) {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
-var Player = function() {
-    Entity.call(this, 'images/char-boy.png', {x: 66, y: 77});
+var Player = function(sprite) {
+    Entity.call(this, sprite, {x: 66, y: 77});
 
     // Potential Move is used to update player position
     this.potentialMove = {
@@ -177,7 +177,7 @@ StaticPlayer.prototype.toggleSelect = function() {
 StaticPlayer.prototype.render = function() {
     if(this.selected) {
         ctx.strokeColor = 'red';
-        ctx.drawRect(loc.x, loc.y, dim.x, dim.y);
+        ctx.strokeRect(this.loc.x, this.loc.y, this.dim.x, this.dim.y);
     }
 
     // Centralize the sprite in the rectangle space.
@@ -186,7 +186,7 @@ StaticPlayer.prototype.render = function() {
         y: this.loc.y + ((this.dim.y - 77) / 2)
     };
 
-    imgLoc = transformEntityLocToPic(imgLoc);
+    imgLoc = transformEntityLocToPic(this.loc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 }
 
@@ -200,7 +200,7 @@ ObjectController = function() {
     this.selectedPlayerIndex = 0;
 
     // Load static players at the begining
-    this.LoadPlayerSelect();
+    this.loadPlayerSelect();
 }
 
 // Loads static player sprities at the beginning of the game to select player
@@ -208,6 +208,8 @@ ObjectController.prototype.loadPlayerSelect = function() {
     var initX = 25;  // Margin to the right and left of all sprites
     var initY = 243; // (Canvas Height - Static Player Height) / 2
     var step = Math.floor((CANVAS_TILES.cols * TILE_DIM.x - 50) / PLAYER_SPRTIES.length);
+
+    var controller = this;
     PLAYER_SPRTIES.forEach(function(sprite) {
         var loc = {
             x: initX,
@@ -217,7 +219,7 @@ ObjectController.prototype.loadPlayerSelect = function() {
             x: step,
             y: 120
         };
-        this.staticPlayers.push(new StaticPlayer(sprite, loc, dim));
+        controller.staticPlayers.push(new StaticPlayer(sprite, loc, dim));
         initX += step;
     });
 
@@ -228,8 +230,9 @@ ObjectController.prototype.loadPlayerSelect = function() {
 // Updates enemies position and player position in game mode.
 ObjectController.prototype.update = function(dt) {
     if(this.mode == 'game') {
+        var player = this.player;
         this.allEnemies.forEach(function(enemy) {
-            enemy.update(dt, this.player);
+            enemy.update(dt, player);
         });
         this.player.update();
     }
@@ -292,7 +295,7 @@ ObjectController.prototype._generateGameEntities = function() {
     for(var i=0; i < ENEMIES_COUNT; i++) {
         this.allEnemies.push(new Enemy());
     }
-    this.player = new Player();
+    this.player = new Player(this.staticPlayers[this.selectedPlayerIndex].sprite);
 };
 
 ObjectController.prototype.loadGame = function() {
@@ -334,17 +337,16 @@ ObjectController.prototype.handleInput = function(key) {
             default:
                 break;
         }
+    } else {
+        if(key == 'quit') {
+            this.quitGame();
+        } else {
+            this.player.handleInput(key);
+        }
     }
 };
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-var allEnemies = [];
-var player = new Player();
-generateEnemies();
-
-
+var controller = new ObjectController();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
@@ -358,7 +360,7 @@ document.addEventListener('keyup', function(e) {
         81: 'quit'
     };
 
-    player.handleInput(allowedKeys[e.keyCode]);
+    controller.handleInput(allowedKeys[e.keyCode]);
 });
 
 // Helper function to check collision between two objects
@@ -411,10 +413,4 @@ function transformEntityLocToPic(location) {
         x: location.x,
         y: location.y - IMAGE_LOCATION_SHIFT
     };
-}
-
-function generateEnemies() {
-    for(var i=0; i < ENEMIES_COUNT; i++) {
-        allEnemies.push(new Enemy());
-    }
 }
