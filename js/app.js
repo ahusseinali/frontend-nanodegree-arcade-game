@@ -201,6 +201,7 @@ ObjectController = function() {
     this.LoadPlayerSelect();
 }
 
+// Loads static player sprities at the beginning of the game to select player
 ObjectController.prototype.loadPlayerSelect = function() {
     var initX = 25;  // Margin to the right and left of all sprites
     var initY = 243; // (Canvas Height - Static Player Height) / 2
