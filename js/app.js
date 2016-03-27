@@ -197,6 +197,7 @@ ObjectController = function() {
     this.player = null;
     this.allEnemies = [];
     this.staticPlayers = [];
+    this.selectedPlayerIndex = 0;
 
     // Load static players at the begining
     this.LoadPlayerSelect();
@@ -221,7 +222,7 @@ ObjectController.prototype.loadPlayerSelect = function() {
     });
 
     // Make first player selected by default
-    this.staticPlayers[0].toggleSelect();
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
 };
 
 // Updates enemies position and player position in game mode.
@@ -286,11 +287,54 @@ ObjectController.prototype._renderMap = function() {
     }
 };
 
+// Generates all game entities.
 ObjectController.prototype._generateGameEntities = function() {
     for(var i=0; i < ENEMIES_COUNT; i++) {
         this.allEnemies.push(new Enemy());
     }
     this.player = new Player();
+};
+
+ObjectController.prototype.loadGame = function() {
+    this.mode = 'game';
+    this._generateGameEntities();
+}
+
+ObjectController.prototype.quitGame = function() {
+    // Change mode and clear all game entities
+    this.mode = 'select';
+    this.allEnemies = [];
+    this.player = [];
+    // Reset selected player to first player
+    this._changeSelectedPlayer(0);
+}
+
+// Changes the selected static player
+ObjectController.prototype._changeSelectedPlayer = function(newIndex) {
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+    this.selectedPlayerIndex = newIndex < 0 ?
+        newIndex + this.staticPlayers.length :
+        newIndex % this.staticPlayers.length;
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+}
+
+ObjectController.prototype.handleInput = function(key) {
+    // Based on game mode. certain keys work
+    if(this.mode == 'select') {
+        switch(key) {
+            case 'enter':
+                this.loadGame();
+                break;
+            case 'right':
+                this._changeSelectedPlayer(this.selectedPlayerIndex + 1);
+                break;
+            case 'left':
+                this._changeSelectedPlayer(this.selectedPlayerIndex - 1);
+                break;
+            default:
+                break;
+        }
+    }
 };
 
 // Now instantiate your objects.
@@ -306,10 +350,12 @@ generateEnemies();
 // Player.handleInput() method. You don't need to modify this.
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
+        13: 'enter',
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        81: 'quit'
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
