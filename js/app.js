@@ -23,13 +23,13 @@ var Entity = function(sprite, dim) {
     this.sprite = sprite;
     this.dim = dim;
     this.loc = {x: 0, y: 0};
-}
+};
 
 // Display entity in canvas
 Entity.prototype.render = function() {
     var imgLoc = transformEntityLocToPic(this.loc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
-}
+};
 
 // Enemies our player must avoid
 var Enemy = function() {
