@@ -97,7 +97,7 @@ var Player = function(sprite) {
 
     // Initialize Player location
     this.initLocation();
-}
+};
 
 Player.prototype = Object.create(Entity.prototype);
 Player.prototype.constructor = Player;
@@ -127,7 +127,7 @@ Player.prototype.update = function() {
     // Reset potentialMove values till the next key stroke
     this.potentialMove.x = 0;
     this.potentialMove.y = 0;
-}
+};
 
 Player.prototype.handleInput = function(key) {
     var nextX = 0;
@@ -159,12 +159,29 @@ Player.prototype.handleInput = function(key) {
     // Set potentialMove to nextX and nextY
     this.potentialMove.x = nextX;
     this.potentialMove.y = nextY;
-}
+};
 
 // Defines the game map
 GameMap = function() {
+    // Defines all the tiles used to build the map.
+    this.rowImages = [
+        'images/water-block.png',   // Top row is water
+        'images/stone-block.png',   // Row 1 of 3 of stone
+        'images/stone-block.png',   // Row 2 of 3 of stone
+        'images/stone-block.png',   // Row 3 of 3 of stone
+        'images/grass-block.png',   // Row 1 of 2 of grass
+        'images/grass-block.png'    // Row 2 of 2 of grass
+    ];
+};
 
-}
+GameMap.prototype.render = function() {
+    for (var row = 0; row < CANVAS_TILES.rows; row++) {
+        for (var col = 0; col < CANVAS_TILES.cols; col++) {
+            ctx.drawImage(Resources.get(this.rowImages[row]),
+                col * TILE_DIM.x, row * TILE_DIM.y);
+        }
+    }
+};
 
 // Defines static player sprites. This is used to select player when the game starts.
 StaticPlayer = function(sprite, loc, dim) {
@@ -200,6 +217,7 @@ StaticPlayer.prototype.render = function() {
 // Modes include: select, game
 GameController = function() {
     this.mode = 'select';
+    this.map = null;
     this.player = null;
     this.allEnemies = [];
     this.staticPlayers = [];
@@ -253,46 +271,11 @@ GameController.prototype.render = function() {
         });
     } else {
         //Render the map, then render enemies and player
-        this._renderMap();
+        this.map.render();
         this.allEnemies.forEach(function(enemy) {
             enemy.render();
         });
         this.player.render();
-    }
-};
-
-// Renders map tiles.
-// TODO: Create Map Class.
-GameController.prototype._renderMap = function() {
-    /* This array holds the relative URL to the image used
-     * for that particular row of the game level.
-     */
-    var rowImages = [
-        'images/water-block.png',   // Top row is water
-        'images/stone-block.png',   // Row 1 of 3 of stone
-        'images/stone-block.png',   // Row 2 of 3 of stone
-        'images/stone-block.png',   // Row 3 of 3 of stone
-        'images/grass-block.png',   // Row 1 of 2 of grass
-        'images/grass-block.png'    // Row 2 of 2 of grass
-    ],
-    row, col;
-
-    /* Loop through the number of rows and columns we've defined above
-     * and, using the rowImages array, draw the correct image for that
-     * portion of the "grid"
-     */
-    for (row = 0; row < CANVAS_TILES.rows; row++) {
-        for (col = 0; col < CANVAS_TILES.cols; col++) {
-            /* The drawImage function of the canvas' context element
-             * requires 3 parameters: the image to draw, the x coordinate
-             * to start drawing and the y coordinate to start drawing.
-             * We're using our Resources helpers to refer to our images
-             * so that we get the benefits of caching these images, since
-             * we're using them over and over.
-             */
-            ctx.drawImage(Resources.get(rowImages[row]),
-                col * TILE_DIM.x, row * TILE_DIM.y);
-        }
     }
 };
 
@@ -304,16 +287,19 @@ GameController.prototype._generateGameEntities = function() {
     this.player = new Player(this.staticPlayers[this.selectedPlayerIndex].sprite);
 };
 
+// Initialize Game Map and generate game entities.
 GameController.prototype.loadGame = function() {
     this.mode = 'game';
+    this.map = new GameMap();
     this._generateGameEntities();
 }
 
 GameController.prototype.quitGame = function() {
-    // Change mode and clear all game entities
+    // Change mode, map and clear all game entities
     this.mode = 'select';
+    this.map = null;
+    this.player = null;
     this.allEnemies = [];
-    this.player = [];
     // Reset selected player to first player
     this._changeSelectedPlayer(0);
 }
