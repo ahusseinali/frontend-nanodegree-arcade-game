@@ -12,17 +12,6 @@ var CANVAS_TILES = {
     cols: 5
 };
 
-// Defines the possible speed range of enemies
-var ENEMY_SPEEDS = [100, 250, 500];
-
-var PLAYER_SPRTIES = [
-    'images/char-boy.png',
-    'images/char-cat-girl.png',
-    'images/char-horn-girl.png',
-    'images/char-pink-girl.png',
-    'images/char-princess-girl.png'
-];
-
 // Base class for all entities in game
 var Entity = function(sprite, dim) {
     // The sprite used to display entity.
@@ -40,6 +29,8 @@ Entity.prototype.render = function() {
 var Enemy = function() {
     Entity.call(this, 'images/enemy-bug.png', {x: 98, y: 77});
 
+    // List of all possible speeds an enemy can take.
+    this.availableEnemySpeeds = [100, 250, 500];
     // Initialize Enemy's location and speed
     this.initLocationAndSpeed();
 };
@@ -54,7 +45,8 @@ Enemy.prototype.initLocationAndSpeed = function() {
         x: TILE_DIM.x * -1,
         y: TILE_DIM.y * Math.floor(Math.random() * 3 + 1)
     };
-    this.speed = ENEMY_SPEEDS[Math.floor(Math.random() * 3)];
+    this.speed =
+        this.availableEnemySpeeds[Math.floor(Math.random() * this.availableEnemySpeeds.length)];
 };
 
 // Update the enemy's position, required method for game
@@ -92,11 +84,13 @@ var Player = function(sprite) {
         y: 0
     };
 
-    // Flag to indicate if player should be reset.
+    // Flags to indicate if player should be reset.
     this.isHit = false;
+    this.score = 0;
 
     // Initialize Player location
     this.initLocation();
+
 };
 
 Player.prototype = Object.create(Entity.prototype);
@@ -112,6 +106,8 @@ Player.prototype.initLocation = function() {
 
 Player.prototype.update = function() {
     if(this.isHit) {
+        // Got hit, decrease score
+        this.score--;
         this.initLocation();
         this.isHit = false;
     } else {
@@ -121,6 +117,8 @@ Player.prototype.update = function() {
 
     // Check if location is at the sea row (first row)
     if(this.loc.y < TILE_DIM.y) {
+        // Reached the end, increase score.
+        this.score++;
         this.initLocation();
     }
 
@@ -295,31 +293,57 @@ StaticPlayer.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 };
 
-// GameController handles update and render requests and pass it to the proper objects
-// Modes include: select, game
-GameController = function() {
-    this.mode = 'select';
-    this.map = null;
-    this.player = null;
-    this.allEnemies = [];
+// Manages player selection and related sprite loading and input handling
+PlayerSelectController = function() {
+    this.playerSprites = [
+        'images/char-boy.png',
+        'images/char-cat-girl.png',
+        'images/char-horn-girl.png',
+        'images/char-pink-girl.png',
+        'images/char-princess-girl.png'
+    ];
     this.staticPlayers = [];
     this.selectedPlayerIndex = 0;
-    this.textController = new TextController();
-    this.time = 0;  // Elpased time from game start in milliseconds
-    this.score = 0;
-
-    // Load static players at the begining
-    this.loadPlayerSelect();
+    this._loadPlayers();
 };
 
-// Loads static player sprities at the beginning of the game to select player
-GameController.prototype.loadPlayerSelect = function() {
+PlayerSelectController.prototype.render = function() {
+    // Clear the canvas and draw all static players
+    this.staticPlayers.forEach(function(player) {
+        player.render();
+    });
+};
+
+PlayerSelectController.prototype.handleInput = function(key) {
+    switch(key) {
+        case 'right':
+            this._changeSelectedPlayer(this.selectedPlayerIndex + 1);
+            break;
+        case 'left':
+            this._changeSelectedPlayer(this.selectedPlayerIndex - 1);
+            break;
+        default:
+            break;
+    }
+};
+
+// Returns the selected sprite to be used in the game.
+PlayerSelectController.prototype.getSelected = function() {
+    return this.playerSprites[this.selectedPlayerIndex];
+}
+
+// Resets the selected sprite to the first one.
+PlayerSelectController.prototype.resetSelection = function() {
+    this._changeSelectedPlayer(0);
+}
+
+PlayerSelectController.prototype._loadPlayers = function() {
     var initX = 25;  // Margin to the right and left of all sprites
     var initY = 243; // (Canvas Height - Static Player Height) / 2
-    var step = Math.floor((CANVAS_TILES.cols * TILE_DIM.x - 50) / PLAYER_SPRTIES.length);
+    var step = Math.floor((CANVAS_TILES.cols * TILE_DIM.x - 50) / this.playerSprites.length);
 
     var controller = this;
-    PLAYER_SPRTIES.forEach(function(sprite) {
+    this.playerSprites.forEach(function(sprite) {
         var loc = {
             x: initX,
             y: initY
@@ -336,6 +360,27 @@ GameController.prototype.loadPlayerSelect = function() {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
 };
 
+// Changes the selected static player
+PlayerSelectController.prototype._changeSelectedPlayer = function(newIndex) {
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+    this.selectedPlayerIndex = newIndex < 0 ?
+        newIndex + this.staticPlayers.length :
+        newIndex % this.staticPlayers.length;
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+};
+
+// GameController handles update and render requests and pass it to the proper objects
+// Modes include: select, game
+GameController = function() {
+    this.mode = 'select';
+    this.map = null;
+    this.player = null;
+    this.allEnemies = [];
+    this.playerSelectController = new PlayerSelectController();
+    this.textController = new TextController();
+    this.time = 0;  // Elpased time from game start in milliseconds
+};
+
 // Updates enemies position and player position in game mode.
 GameController.prototype.update = function(dt) {
     if(this.mode == 'game') {
@@ -345,17 +390,14 @@ GameController.prototype.update = function(dt) {
             enemy.update(dt, player);
         });
         this.player.update();
-        this.textController.update(this.time, this.score);
+        this.textController.update(this.time, this.player.score);
     }
 };
 
 GameController.prototype.render = function() {
     ctx.clearRect(0, 0, 505, 606);  // TODO: Make Canvas Width and Height global
     if(this.mode == 'select') {
-        // Clear the canvas and draw all static players
-        this.staticPlayers.forEach(function(player) {
-            player.render();
-        });
+        this.playerSelectController.render();
         this.textController.renderStart();
     } else {
         //Render the map, then render enemies and player
@@ -373,7 +415,6 @@ GameController.prototype.loadGame = function() {
     this.mode = 'game';
     this.map = new GameMap();
     this.time = 0;
-    this.score = 0;
     this._generateGameEntities();
 };
 
@@ -384,24 +425,16 @@ GameController.prototype.quitGame = function() {
     this.player = null;
     this.allEnemies = [];
     // Reset selected player to first player
-    this._changeSelectedPlayer(0);
+    this.playerSelectController.resetSelection();
 };
 
 GameController.prototype.handleInput = function(key) {
     // Based on game mode. certain keys work
     if(this.mode == 'select') {
-        switch(key) {
-            case 'enter':
-                this.loadGame();
-                break;
-            case 'right':
-                this._changeSelectedPlayer(this.selectedPlayerIndex + 1);
-                break;
-            case 'left':
-                this._changeSelectedPlayer(this.selectedPlayerIndex - 1);
-                break;
-            default:
-                break;
+        if(key == 'enter') {
+            this.loadGame();
+        } else {
+            this.playerSelectController.handleInput(key);
         }
     } else {
         if(key == 'quit') {
@@ -417,16 +450,7 @@ GameController.prototype._generateGameEntities = function() {
     for(var i=0; i < ENEMIES_COUNT; i++) {
         this.allEnemies.push(new Enemy());
     }
-    this.player = new Player(this.staticPlayers[this.selectedPlayerIndex].sprite);
-};
-
-// Changes the selected static player
-GameController.prototype._changeSelectedPlayer = function(newIndex) {
-    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
-    this.selectedPlayerIndex = newIndex < 0 ?
-        newIndex + this.staticPlayers.length :
-        newIndex % this.staticPlayers.length;
-    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+    this.player = new Player(this.playerSelectController.getSelected());
 };
 
 // Create a controller instance. This is used to call game update and rendering.
