@@ -161,6 +161,12 @@ Player.prototype.handleInput = function(key) {
     this.potentialMove.y = nextY;
 }
 
+// Defines the game map
+GameMap = function() {
+
+}
+
+// Defines static player sprites. This is used to select player when the game starts.
 StaticPlayer = function(sprite, loc, dim) {
     this.sprite = sprite;
     this.loc = loc;
@@ -176,7 +182,7 @@ StaticPlayer.prototype.toggleSelect = function() {
 
 StaticPlayer.prototype.render = function() {
     if(this.selected) {
-        ctx.strokeColor = 'red';
+        ctx.strokeStyle = 'red';
         ctx.strokeRect(this.loc.x, this.loc.y, this.dim.x, this.dim.y);
     }
 
