@@ -161,7 +161,7 @@ Player.prototype.handleInput = function(key) {
     this.potentialMove.y = nextY;
 };
 
-// Defines the game map
+// Defines the game map. Saves the tiles that constructs the map.
 GameMap = function() {
     // Defines all the tiles used to build the map.
     this.rowImages = [
@@ -181,6 +181,98 @@ GameMap.prototype.render = function() {
                 col * TILE_DIM.x, row * TILE_DIM.y);
         }
     }
+};
+
+GameText = function(font, loc, color) {
+    this.font = font;
+    this.loc = loc;
+    this.color = color;
+};
+
+GameText.prototype.setText = function(text) {
+    this.text = text;
+};
+
+GameText.prototype.setAlign = function(align) {
+    this.align = align;
+};
+
+GameText.prototype.setBaseline = function(baseline) {
+    this.baseline = baseline;
+};
+
+GameText.prototype.render = function() {
+    if(!this.text) {
+        return;
+    }
+
+    ctx.save();
+    ctx.font = this.font;
+    ctx.fillStyle = this.color;
+    if(this.align) {
+        ctx.textAlign = this.align;
+    }
+    if(this.baseline) {
+        ctx.textBaseline = this.baseline;
+    }
+    ctx.fillText(this.text, this.loc.x, this.loc.y);
+    ctx.restore();
+};
+
+TextController = function() {
+    var width = CANVAS_TILES.cols * TILE_DIM.x;
+    var height = Canvas_TILES.rows * TILE_DIM.y;
+
+    // Define the game text used in game start
+    this.start = [];
+    var startHead = new GameText('40px Pixel', {x: Math.floor(width/2), y: 100}, '#f00');
+    startHead.setText('Select Player');
+    startHead.setAlign('center');
+    this.start.push(startHead);
+
+    var startDir = new GameText('20px Pixel', {x: Math.floor(width/2), y: 150}, '#f00');
+    startDir.setText('Use left and right arrows to select player');
+    startDir.setAlign('center');
+    this.start.push(startDir);
+
+    var startGame = new GameText('20px Pixel', {x: Math.floor(width/2), y: height - 30}, '#fc0');
+    startGame.setText('Press Enter to Start Game');
+    startGame.setAlign('center');
+    this.start.push(startGame);
+
+    this.scoreText = new GameText('15px Pixel', {x: 10, y: 5}, '#00f');
+    this.scoreText.setAlign('left');
+    this.scoreText.setBaseline('top');
+
+    this.timeText = new GameText('15px Pixel', {x: width - 10, y: 5}, '#000');
+    this.timeText.setAlign('right');
+    this.timeText.setBaseline('top');
+};
+
+TextController.prototype.update = function(time, score) {
+    // Convert time to hh:mm:ss:000;
+    var timeStr = '';
+    var curTime = time / (3600000);
+    timeStr += curTime + ':';
+    curTime = (time - curTime * 3600000) / 60000;
+    timeStr += curTime + ':';
+    curTime = (time - curTime * 60000) / 1000;
+    timeStr += curTime + '.';
+    curTime = time - curTime;
+    timeStr += curTime.toFixed(3);
+    this.timeText.setText(timeStr);
+    this.scoreText.setText(score);
+};
+
+TextController.prototype.renderStart = function() {
+    this.start.forEach(function(startText) {
+        startText.render();
+    });
+};
+
+TextController.prototype.renderGame = function() {
+    this.scoreText.render();
+    this.timeText.render();
 };
 
 // Defines static player sprites. This is used to select player when the game starts.
