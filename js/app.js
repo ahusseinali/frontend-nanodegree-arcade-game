@@ -1,12 +1,17 @@
 // Constants
-// Defines the shift required in entity location to place it correctly.
+// Defines the shift required in entity location (in pixels) to place it correctly.
 var IMAGE_LOCATION_SHIFT = 28;
+
+// Number of enemies to generate in game.
 var ENEMIES_COUNT = 3;
 
+// Dimensions of a single tile that composes the game map.
 var TILE_DIM = {
     x: 101,
     y: 83
 };
+
+// Number of rows and cols composed of tiles in game map.
 var CANVAS_TILES = {
     rows: 6,
     cols: 5
@@ -20,6 +25,7 @@ var Entity = function(sprite, dim) {
     this.loc = {x: 0, y: 0};
 }
 
+// Display entity in canvas
 Entity.prototype.render = function() {
     var imgLoc = transformEntityLocToPic(this.loc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
@@ -72,9 +78,7 @@ Enemy.prototype.update = function(dt, player) {
     }
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
+// Defines the player of the game.
 var Player = function(sprite) {
     Entity.call(this, sprite, {x: 66, y: 77});
 
@@ -86,6 +90,8 @@ var Player = function(sprite) {
 
     // Flags to indicate if player should be reset.
     this.isHit = false;
+
+    // Keeps track of the player score.
     this.score = 0;
 
     // Initialize Player location
@@ -104,6 +110,7 @@ Player.prototype.initLocation = function() {
     };
 };
 
+// Handles updating player position if they get hit, win or reach boundary.
 Player.prototype.update = function() {
     if(this.isHit) {
         // Got hit, decrease score
@@ -127,6 +134,7 @@ Player.prototype.update = function() {
     this.potentialMove.y = 0;
 };
 
+// Handles player related input (Arrow keys).
 Player.prototype.handleInput = function(key) {
     var nextX = 0;
     var nextY = 0;
@@ -172,6 +180,7 @@ GameMap = function() {
     ];
 };
 
+// Draw the game map. The map consists of adjacent tiles.
 GameMap.prototype.render = function() {
     for (var row = 0; row < CANVAS_TILES.rows; row++) {
         for (var col = 0; col < CANVAS_TILES.cols; col++) {
@@ -181,24 +190,31 @@ GameMap.prototype.render = function() {
     }
 };
 
+// Defines text to be displayed in canvas.
 GameText = function(font, loc, color) {
     this.font = font;
     this.loc = loc;
     this.color = color;
 };
 
+// Setter for the content to display.
 GameText.prototype.setText = function(text) {
     this.text = text;
 };
 
+// Setter for text alignment relative to location.
+// Default alignment (left) is used if this value is not set.
 GameText.prototype.setAlign = function(align) {
     this.align = align;
 };
 
+// Setter for text baseline relative to location.
+// Default baseline (bottom) is used if this value is not set.
 GameText.prototype.setBaseline = function(baseline) {
     this.baseline = baseline;
 };
 
+// Display text in canvas.
 GameText.prototype.render = function() {
     if(!this.text) {
         return;
@@ -217,6 +233,7 @@ GameText.prototype.render = function() {
     ctx.restore();
 };
 
+// Controller to handle all game text.
 TextController = function() {
     var width = CANVAS_TILES.cols * TILE_DIM.x;
     var height = CANVAS_TILES.rows * TILE_DIM.y;
@@ -247,23 +264,27 @@ TextController = function() {
     this.timeText.setBaseline('top');
 };
 
+// Update time and score text during the game.
 TextController.prototype.update = function(time, score) {
     this.timeText.setText(convertTime(time));
     this.scoreText.setText("Score: " + score);
 };
 
+// Render the text to be displayed at player selection stage.
 TextController.prototype.renderStart = function() {
     this.start.forEach(function(startText) {
         startText.render();
     });
 };
 
+// Display the text to be displayed during the game.
+// Mainly it displays Score and Elapsed time.
 TextController.prototype.renderGame = function() {
     this.scoreText.render();
     this.timeText.render();
 };
 
-// Defines static player sprites. This is used to select player when the game starts.
+// Define static player sprites. This is used to select player when the game starts.
 StaticPlayer = function(sprite, loc, dim) {
     this.sprite = sprite;
     this.loc = loc;
@@ -273,10 +294,12 @@ StaticPlayer = function(sprite, loc, dim) {
     this.selected = false;
 };
 
+// Toggle the selection of a player.
 StaticPlayer.prototype.toggleSelect = function() {
     this.selected = !this.selected;
 };
 
+// Draw the static player sprite in canvas.
 StaticPlayer.prototype.render = function() {
     if(this.selected) {
         ctx.strokeStyle = 'red';
@@ -293,7 +316,7 @@ StaticPlayer.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 };
 
-// Manages player selection and related sprite loading and input handling
+// Manage player selection and related sprite loading and input handling
 PlayerSelectController = function() {
     this.playerSprites = [
         'images/char-boy.png',
@@ -307,6 +330,7 @@ PlayerSelectController = function() {
     this._loadPlayers();
 };
 
+// Manage rendering of all static players.
 PlayerSelectController.prototype.render = function() {
     // Clear the canvas and draw all static players
     this.staticPlayers.forEach(function(player) {
@@ -314,6 +338,7 @@ PlayerSelectController.prototype.render = function() {
     });
 };
 
+// Handle player selection related input (Left and right arrows).
 PlayerSelectController.prototype.handleInput = function(key) {
     switch(key) {
         case 'right':
@@ -327,16 +352,17 @@ PlayerSelectController.prototype.handleInput = function(key) {
     }
 };
 
-// Returns the selected sprite to be used in the game.
+// Return the selected sprite to be used in the game.
 PlayerSelectController.prototype.getSelected = function() {
     return this.playerSprites[this.selectedPlayerIndex];
-}
+};
 
-// Resets the selected sprite to the first one.
+// Reset the selected sprite to the first one.
 PlayerSelectController.prototype.resetSelection = function() {
     this._changeSelectedPlayer(0);
-}
+};
 
+// Initialize static players location, sprites and selection.
 PlayerSelectController.prototype._loadPlayers = function() {
     var initX = 25;  // Margin to the right and left of all sprites
     var initY = 243; // (Canvas Height - Static Player Height) / 2
@@ -360,7 +386,7 @@ PlayerSelectController.prototype._loadPlayers = function() {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
 };
 
-// Changes the selected static player
+// Change the selected player
 PlayerSelectController.prototype._changeSelectedPlayer = function(newIndex) {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
     this.selectedPlayerIndex = newIndex < 0 ?
@@ -381,7 +407,7 @@ GameController = function() {
     this.time = 0;  // Elpased time from game start in milliseconds
 };
 
-// Updates enemies position and player position in game mode.
+// Update enemies position and player position in game mode.
 GameController.prototype.update = function(dt) {
     if(this.mode == 'game') {
         this.time += dt;
@@ -394,6 +420,7 @@ GameController.prototype.update = function(dt) {
     }
 };
 
+// Manage what entities to display at a certain mode.
 GameController.prototype.render = function() {
     ctx.clearRect(0, 0, 505, 606);  // TODO: Make Canvas Width and Height global
     if(this.mode == 'select') {
@@ -418,6 +445,7 @@ GameController.prototype.loadGame = function() {
     this._generateGameEntities();
 };
 
+// Clear all entities arrays and return to selection mode.
 GameController.prototype.quitGame = function() {
     // Change mode, map and clear all game entities
     this.mode = 'select';
@@ -428,6 +456,7 @@ GameController.prototype.quitGame = function() {
     this.playerSelectController.resetSelection();
 };
 
+// Main entry point for input handling.
 GameController.prototype.handleInput = function(key) {
     // Based on game mode. certain keys work
     if(this.mode == 'select') {
@@ -471,7 +500,7 @@ document.addEventListener('keyup', function(e) {
     controller.handleInput(allowedKeys[e.keyCode]);
 });
 
-// Helper function to check collision between two objects
+// Check collision between two objects
 function isCollision(loc1, dim1, loc2, dim2) {
     // Define corner points for both shapes
     // These are the critical points for comparison.
@@ -515,7 +544,7 @@ function isInBoundary(x, y, boundary) {
     };
 }
 
-// Helper function to transform entity location to image location.
+// Transform entity location to image location.
 function transformEntityLocToPic(location) {
     return {
         x: location.x,
@@ -523,7 +552,7 @@ function transformEntityLocToPic(location) {
     };
 }
 
-// Converts seconds to hh:mm:ss.MMM
+// Convert seconds to hh:mm:ss.MMM
 function convertTime(seconds) {
     var s = seconds;
     var m = Math.floor(s / 60);
