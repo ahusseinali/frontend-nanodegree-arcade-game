@@ -262,26 +262,38 @@ TextController = function() {
     this.timeText = new GameText('20px Lekton', {x: width - 10, y: 5}, '#000');
     this.timeText.setAlign('right');
     this.timeText.setBaseline('top');
+
+    this.gameOverText = new GameText('bold 40px Lekton', {x: width / 2, y: height / 2 - 20}, '#000');
+    this.gameOverText.setAlign('center');
+
+    this.finalScoreText = new GameText('bold 60px Lekton', {x: width / 2, y: height / 2}, '#00f');
+    this.finalScoreText.setAlign('center');
+    this.finalScoreText.setBaseline('top');
 };
 
 // Update time and score text during the game.
 TextController.prototype.update = function(time, score) {
     this.timeText.setText(convertTime(time));
     this.scoreText.setText("Score: " + score);
+    this.finalScoreText.setText("Your Score is " + score);
 };
 
-// Render the text to be displayed at player selection stage.
-TextController.prototype.renderStart = function() {
-    this.start.forEach(function(startText) {
-        startText.render();
-    });
-};
-
-// Display the text to be displayed during the game.
-// Mainly it displays Score and Elapsed time.
-TextController.prototype.renderGame = function() {
-    this.scoreText.render();
-    this.timeText.render();
+// Render the text based on the game mode.
+TextController.prototype.render = function(gameMode) {
+    switch(gameMode) {
+        case 'select':
+            this.start.forEach(function(startText) {
+                startText.render();
+            });
+            break;
+        case 'game':
+            this.scoreText.render();
+            this.timeText.render();
+            break;
+        case 'over':
+            this.gameOverText.render();
+            this.finalScoreText.render();
+    }
 };
 
 // Define static player sprites. This is used to select player when the game starts.
@@ -425,7 +437,6 @@ GameController.prototype.render = function() {
     ctx.clearRect(0, 0, 505, 606);  // TODO: Make Canvas Width and Height global
     if(this.mode == 'select') {
         this.playerSelectController.render();
-        this.textController.renderStart();
     } else {
         //Render the map, then render enemies and player
         this.map.render();
@@ -433,8 +444,9 @@ GameController.prototype.render = function() {
             enemy.render();
         });
         this.player.render();
-        this.textController.renderGame();
     }
+
+    this.textController.render(this.mode);
 };
 
 // Initialize Game Map and generate game entities.

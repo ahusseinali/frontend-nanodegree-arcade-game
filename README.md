@@ -1,6 +1,19 @@
-frontend-nanodegree-arcade-game
-===============================
+Nanodegree Arcade Game
+======================
 
-Students should use this [rubric](https://www.udacity.com/course/viewer/#!/c-nd001/l-2696458597/m-2687128535) for self-checking their submission.
+Instructions to run the game
+============================
+1- Download branch.
+2- Open "index.html" in your browser (compatible with major browsers like Chrome, IE, Edge, Firefox, Safari)
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+How to Play
+===========
+1- Use "Left" and "Right" arrows to select player.
+2- Press "Enter" to start game with the selected player.
+3- Use "Left", "Right", "Up", "Down" arrows to move player in the map.
+4- Avoid hitting the enemies to win.
+5- Reach the sea side to get more score.
+6- The game ends in 90 seconds and your final score is displayed.
+7- To Quit and select another player, press 'Q'
+8- To restart with the same player, press 'R'
+
