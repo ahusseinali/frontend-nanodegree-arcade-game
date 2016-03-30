@@ -188,11 +188,11 @@ StaticPlayer.prototype.render = function() {
 
     // Centralize the sprite in the rectangle space.
     var imgLoc = {
-        x: this.loc.x + ((this.dim.x - 66) / 2),
-        y: this.loc.y + ((this.dim.y - 77) / 2)
+        x: this.loc.x - 5,
+        y: this.loc.y - 15
     };
 
-    imgLoc = transformEntityLocToPic(this.loc);
+    imgLoc = transformEntityLocToPic(imgLoc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 }
 
