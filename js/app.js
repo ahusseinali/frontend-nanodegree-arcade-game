@@ -250,17 +250,7 @@ TextController = function() {
 };
 
 TextController.prototype.update = function(time, score) {
-    // Convert time to hh:mm:ss:000;
-    var timeStr = '';
-    var curTime = Math.floor(time / (3600000));
-    timeStr += curTime + ':';
-    curTime = Math.floor((time - curTime * 3600000) / 60000);
-    timeStr += curTime + ':';
-    curTime = Math.floor((time - curTime * 60000) / 1000);
-    timeStr += curTime + '.';
-    curTime = time - curTime;
-    timeStr += curTime.toFixed(3);
-    this.timeText.setText(timeStr);
+    this.timeText.setText(convertTime(time));
     this.scoreText.setText("Score: " + score);
 };
 
@@ -507,4 +497,15 @@ function transformEntityLocToPic(location) {
         x: location.x,
         y: location.y - IMAGE_LOCATION_SHIFT
     };
+}
+
+// Converts seconds to hh:mm:ss.MMM
+function convertTime(seconds) {
+    var s = seconds;
+    var m = Math.floor(s / 60);
+    s %= 60;
+    var h = Math.floor(m / 60);
+    m %= 60;
+
+    return h + ':' + m + ':' + s.toFixed(3);
 }
