@@ -191,11 +191,11 @@ StaticPlayer = function(sprite, loc, dim) {
 
     // specify if player is selected or not.
     this.selected = false;
-}
+};
 
 StaticPlayer.prototype.toggleSelect = function() {
     this.selected = !this.selected;
-}
+};
 
 StaticPlayer.prototype.render = function() {
     if(this.selected) {
@@ -211,7 +211,7 @@ StaticPlayer.prototype.render = function() {
 
     imgLoc = transformEntityLocToPic(imgLoc);
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
-}
+};
 
 // GameController handles update and render requests and pass it to the proper objects
 // Modes include: select, game
@@ -225,7 +225,7 @@ GameController = function() {
 
     // Load static players at the begining
     this.loadPlayerSelect();
-}
+};
 
 // Loads static player sprities at the beginning of the game to select player
 GameController.prototype.loadPlayerSelect = function() {
@@ -279,20 +279,12 @@ GameController.prototype.render = function() {
     }
 };
 
-// Generates all game entities.
-GameController.prototype._generateGameEntities = function() {
-    for(var i=0; i < ENEMIES_COUNT; i++) {
-        this.allEnemies.push(new Enemy());
-    }
-    this.player = new Player(this.staticPlayers[this.selectedPlayerIndex].sprite);
-};
-
 // Initialize Game Map and generate game entities.
 GameController.prototype.loadGame = function() {
     this.mode = 'game';
     this.map = new GameMap();
     this._generateGameEntities();
-}
+};
 
 GameController.prototype.quitGame = function() {
     // Change mode, map and clear all game entities
@@ -302,16 +294,7 @@ GameController.prototype.quitGame = function() {
     this.allEnemies = [];
     // Reset selected player to first player
     this._changeSelectedPlayer(0);
-}
-
-// Changes the selected static player
-GameController.prototype._changeSelectedPlayer = function(newIndex) {
-    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
-    this.selectedPlayerIndex = newIndex < 0 ?
-        newIndex + this.staticPlayers.length :
-        newIndex % this.staticPlayers.length;
-    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
-}
+};
 
 GameController.prototype.handleInput = function(key) {
     // Based on game mode. certain keys work
@@ -338,6 +321,24 @@ GameController.prototype.handleInput = function(key) {
     }
 };
 
+// Generates all game entities.
+GameController.prototype._generateGameEntities = function() {
+    for(var i=0; i < ENEMIES_COUNT; i++) {
+        this.allEnemies.push(new Enemy());
+    }
+    this.player = new Player(this.staticPlayers[this.selectedPlayerIndex].sprite);
+};
+
+// Changes the selected static player
+GameController.prototype._changeSelectedPlayer = function(newIndex) {
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+    this.selectedPlayerIndex = newIndex < 0 ?
+        newIndex + this.staticPlayers.length :
+        newIndex % this.staticPlayers.length;
+    this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
+};
+
+// Create a controller instance. This is used to call game update and rendering.
 var controller = new GameController();
 
 // This listens for key presses and sends the keys to your
