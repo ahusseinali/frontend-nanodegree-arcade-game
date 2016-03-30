@@ -196,9 +196,9 @@ StaticPlayer.prototype.render = function() {
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 }
 
-// ObjectController handles update and render requests and pass it to the proper objects
+// GameController handles update and render requests and pass it to the proper objects
 // Modes include: select, game
-ObjectController = function() {
+GameController = function() {
     this.mode = 'select';
     this.player = null;
     this.allEnemies = [];
@@ -210,7 +210,7 @@ ObjectController = function() {
 }
 
 // Loads static player sprities at the beginning of the game to select player
-ObjectController.prototype.loadPlayerSelect = function() {
+GameController.prototype.loadPlayerSelect = function() {
     var initX = 25;  // Margin to the right and left of all sprites
     var initY = 243; // (Canvas Height - Static Player Height) / 2
     var step = Math.floor((CANVAS_TILES.cols * TILE_DIM.x - 50) / PLAYER_SPRTIES.length);
@@ -234,7 +234,7 @@ ObjectController.prototype.loadPlayerSelect = function() {
 };
 
 // Updates enemies position and player position in game mode.
-ObjectController.prototype.update = function(dt) {
+GameController.prototype.update = function(dt) {
     if(this.mode == 'game') {
         var player = this.player;
         this.allEnemies.forEach(function(enemy) {
@@ -244,7 +244,7 @@ ObjectController.prototype.update = function(dt) {
     }
 };
 
-ObjectController.prototype.render = function() {
+GameController.prototype.render = function() {
     ctx.clearRect(0, 0, 505, 606);  // TODO: Make Canvas Width and Height global
     if(this.mode == 'select') {
         // Clear the canvas and draw all static players
@@ -263,7 +263,7 @@ ObjectController.prototype.render = function() {
 
 // Renders map tiles.
 // TODO: Create Map Class.
-ObjectController.prototype._renderMap = function() {
+GameController.prototype._renderMap = function() {
     /* This array holds the relative URL to the image used
      * for that particular row of the game level.
      */
@@ -297,19 +297,19 @@ ObjectController.prototype._renderMap = function() {
 };
 
 // Generates all game entities.
-ObjectController.prototype._generateGameEntities = function() {
+GameController.prototype._generateGameEntities = function() {
     for(var i=0; i < ENEMIES_COUNT; i++) {
         this.allEnemies.push(new Enemy());
     }
     this.player = new Player(this.staticPlayers[this.selectedPlayerIndex].sprite);
 };
 
-ObjectController.prototype.loadGame = function() {
+GameController.prototype.loadGame = function() {
     this.mode = 'game';
     this._generateGameEntities();
 }
 
-ObjectController.prototype.quitGame = function() {
+GameController.prototype.quitGame = function() {
     // Change mode and clear all game entities
     this.mode = 'select';
     this.allEnemies = [];
@@ -319,7 +319,7 @@ ObjectController.prototype.quitGame = function() {
 }
 
 // Changes the selected static player
-ObjectController.prototype._changeSelectedPlayer = function(newIndex) {
+GameController.prototype._changeSelectedPlayer = function(newIndex) {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
     this.selectedPlayerIndex = newIndex < 0 ?
         newIndex + this.staticPlayers.length :
@@ -327,7 +327,7 @@ ObjectController.prototype._changeSelectedPlayer = function(newIndex) {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
 }
 
-ObjectController.prototype.handleInput = function(key) {
+GameController.prototype.handleInput = function(key) {
     // Based on game mode. certain keys work
     if(this.mode == 'select') {
         switch(key) {
@@ -352,7 +352,7 @@ ObjectController.prototype.handleInput = function(key) {
     }
 };
 
-var controller = new ObjectController();
+var controller = new GameController();
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.
