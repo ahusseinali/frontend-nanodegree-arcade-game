@@ -1,4 +1,6 @@
 // Constants
+// Defines the game time in seconds.
+var GAME_TIME = 90;
 // Defines the shift required in entity location (in pixels) to place it correctly.
 var IMAGE_LOCATION_SHIFT = 28;
 
@@ -264,18 +266,24 @@ TextController = function() {
     this.timeText.setBaseline('top');
 
     this.gameOverText = new GameText('bold 40px Lekton', {x: width / 2, y: height / 2 - 20}, '#000');
+    this.gameOverText.setText('Game Over');
     this.gameOverText.setAlign('center');
 
     this.finalScoreText = new GameText('bold 60px Lekton', {x: width / 2, y: height / 2}, '#00f');
     this.finalScoreText.setAlign('center');
     this.finalScoreText.setBaseline('top');
+
+    this.gameRestartText = new GameText('20px Lekton', {x: width / 2, y: height - 30}, '#000');
+    this.gameRestartText.setText('Press R to Restart, Q to Quit');
+    this.gameRestartText.setAlign('center');
+
 };
 
 // Update time and score text during the game.
 TextController.prototype.update = function(time, score) {
-    this.timeText.setText(convertTime(time));
+    this.timeText.setText(time < 0 ? 0 : time.toFixed(3));
     this.scoreText.setText("Score: " + score);
-    this.finalScoreText.setText("Your Score is " + score);
+    this.finalScoreText.setText("Score: " + score);
 };
 
 // Render the text based on the game mode.
@@ -293,6 +301,7 @@ TextController.prototype.render = function(gameMode) {
         case 'over':
             this.gameOverText.render();
             this.finalScoreText.render();
+            this.gameRestartText.render();
     }
 };
 
@@ -416,19 +425,24 @@ GameController = function() {
     this.allEnemies = [];
     this.playerSelectController = new PlayerSelectController();
     this.textController = new TextController();
-    this.time = 0;  // Elpased time from game start in milliseconds
+    this.time = GAME_TIME;  // Remaining time from game start in milliseconds
 };
 
 // Update enemies position and player position in game mode.
 GameController.prototype.update = function(dt) {
     if(this.mode == 'game') {
-        this.time += dt;
+        this.time -= dt;
         var player = this.player;
         this.allEnemies.forEach(function(enemy) {
             enemy.update(dt, player);
         });
         this.player.update();
         this.textController.update(this.time, this.player.score);
+    }
+
+    // Finish Game if time is over
+    if(this.time <= 0) {
+        this.mode = 'over';
     }
 };
 
@@ -453,7 +467,7 @@ GameController.prototype.render = function() {
 GameController.prototype.loadGame = function() {
     this.mode = 'game';
     this.map = new GameMap();
-    this.time = 0;
+    this.time = GAME_TIME;
     this._generateGameEntities();
 };
 
@@ -477,6 +491,12 @@ GameController.prototype.handleInput = function(key) {
         } else {
             this.playerSelectController.handleInput(key);
         }
+    } else if(this.mode == 'over') {
+        if(key == 'restart') {
+            this.loadGame();
+        } else if(key == 'quit') {
+            this.quitGame();
+        }
     } else {
         if(key == 'quit') {
             this.quitGame();
@@ -488,6 +508,8 @@ GameController.prototype.handleInput = function(key) {
 
 // Generates all game entities.
 GameController.prototype._generateGameEntities = function() {
+    // Clear all enemies before generating enemies.
+    this.allEnemies = [];
     for(var i=0; i < ENEMIES_COUNT; i++) {
         this.allEnemies.push(new Enemy());
     }
@@ -506,7 +528,8 @@ document.addEventListener('keyup', function(e) {
         38: 'up',
         39: 'right',
         40: 'down',
-        81: 'quit'
+        81: 'quit',
+        82: 'restart'
     };
 
     controller.handleInput(allowedKeys[e.keyCode]);
@@ -564,7 +587,7 @@ function transformEntityLocToPic(location) {
     };
 }
 
-// Convert seconds to hh:mm:ss.MMM
+// Convert seconds to remainign time ss.MMM
 function convertTime(seconds) {
     var s = seconds;
     var m = Math.floor(s / 60);
