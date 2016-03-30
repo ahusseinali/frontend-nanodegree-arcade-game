@@ -221,30 +221,30 @@ GameText.prototype.render = function() {
 
 TextController = function() {
     var width = CANVAS_TILES.cols * TILE_DIM.x;
-    var height = Canvas_TILES.rows * TILE_DIM.y;
+    var height = CANVAS_TILES.rows * TILE_DIM.y;
 
     // Define the game text used in game start
     this.start = [];
-    var startHead = new GameText('40px Pixel', {x: Math.floor(width/2), y: 100}, '#f00');
+    var startHead = new GameText('40px Lekton', {x: Math.floor(width/2), y: 100}, '#f00');
     startHead.setText('Select Player');
     startHead.setAlign('center');
     this.start.push(startHead);
 
-    var startDir = new GameText('20px Pixel', {x: Math.floor(width/2), y: 150}, '#f00');
-    startDir.setText('Use left and right arrows to select player');
+    var startDir = new GameText('15px Lekton', {x: Math.floor(width/2), y: 150}, '#fc0');
+    startDir.setText('Use LEFT and RIGHT arrows to select player');
     startDir.setAlign('center');
     this.start.push(startDir);
 
-    var startGame = new GameText('20px Pixel', {x: Math.floor(width/2), y: height - 30}, '#fc0');
-    startGame.setText('Press Enter to Start Game');
+    var startGame = new GameText('15px Lekton', {x: Math.floor(width/2), y: height - 30}, '#fc0');
+    startGame.setText('Press ENTER to Start Game');
     startGame.setAlign('center');
     this.start.push(startGame);
 
-    this.scoreText = new GameText('15px Pixel', {x: 10, y: 5}, '#00f');
+    this.scoreText = new GameText('20px Lekton', {x: 10, y: 5}, '#00f');
     this.scoreText.setAlign('left');
     this.scoreText.setBaseline('top');
 
-    this.timeText = new GameText('15px Pixel', {x: width - 10, y: 5}, '#000');
+    this.timeText = new GameText('20px Lekton', {x: width - 10, y: 5}, '#000');
     this.timeText.setAlign('right');
     this.timeText.setBaseline('top');
 };
@@ -252,16 +252,16 @@ TextController = function() {
 TextController.prototype.update = function(time, score) {
     // Convert time to hh:mm:ss:000;
     var timeStr = '';
-    var curTime = time / (3600000);
+    var curTime = Math.floor(time / (3600000));
     timeStr += curTime + ':';
-    curTime = (time - curTime * 3600000) / 60000;
+    curTime = Math.floor((time - curTime * 3600000) / 60000);
     timeStr += curTime + ':';
-    curTime = (time - curTime * 60000) / 1000;
+    curTime = Math.floor((time - curTime * 60000) / 1000);
     timeStr += curTime + '.';
     curTime = time - curTime;
     timeStr += curTime.toFixed(3);
     this.timeText.setText(timeStr);
-    this.scoreText.setText(score);
+    this.scoreText.setText("Score: " + score);
 };
 
 TextController.prototype.renderStart = function() {
@@ -314,6 +314,9 @@ GameController = function() {
     this.allEnemies = [];
     this.staticPlayers = [];
     this.selectedPlayerIndex = 0;
+    this.textController = new TextController();
+    this.time = 0;  // Elpased time from game start in milliseconds
+    this.score = 0;
 
     // Load static players at the begining
     this.loadPlayerSelect();
@@ -346,11 +349,13 @@ GameController.prototype.loadPlayerSelect = function() {
 // Updates enemies position and player position in game mode.
 GameController.prototype.update = function(dt) {
     if(this.mode == 'game') {
+        this.time += dt;
         var player = this.player;
         this.allEnemies.forEach(function(enemy) {
             enemy.update(dt, player);
         });
         this.player.update();
+        this.textController.update(this.time, this.score);
     }
 };
 
@@ -361,6 +366,7 @@ GameController.prototype.render = function() {
         this.staticPlayers.forEach(function(player) {
             player.render();
         });
+        this.textController.renderStart();
     } else {
         //Render the map, then render enemies and player
         this.map.render();
@@ -368,6 +374,7 @@ GameController.prototype.render = function() {
             enemy.render();
         });
         this.player.render();
+        this.textController.renderGame();
     }
 };
 
@@ -375,6 +382,8 @@ GameController.prototype.render = function() {
 GameController.prototype.loadGame = function() {
     this.mode = 'game';
     this.map = new GameMap();
+    this.time = 0;
+    this.score = 0;
     this._generateGameEntities();
 };
 
