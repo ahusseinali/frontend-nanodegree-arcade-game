@@ -117,7 +117,8 @@ Player.prototype.update = function() {
     if(this.isHit) {
         // Got hit, decrease score
         this.score--;
-        this.initLocation();
+        this.score = this.score < 0 ? 0 : this.score;   // Set score to 0 if it falls below 0.
+        this.initLocation();    // Reset player position.
         this.isHit = false;
     } else {
         this.loc.x += this.potentialMove.x;
