@@ -273,7 +273,7 @@ TextController = function() {
     this.finalScoreText.setAlign('center');
     this.finalScoreText.setBaseline('top');
 
-    this.gameRestartText = new GameText('20px Lekton', {x: width / 2, y: height - 30}, '#000');
+    this.gameRestartText = new GameText('bold 20px Lekton', {x: width / 2, y: height - 30}, '#ff0');
     this.gameRestartText.setText('Press R to Restart, Q to Quit');
     this.gameRestartText.setAlign('center');
 
@@ -302,6 +302,9 @@ TextController.prototype.render = function(gameMode) {
             this.gameOverText.render();
             this.finalScoreText.render();
             this.gameRestartText.render();
+            break;
+        default:
+            break;
     }
 };
 
@@ -438,11 +441,11 @@ GameController.prototype.update = function(dt) {
         });
         this.player.update();
         this.textController.update(this.time, this.player.score);
-    }
 
-    // Finish Game if time is over
-    if(this.time <= 0) {
-        this.mode = 'over';
+        // Finish Game if time is over
+        if(this.time <= 0) {
+            this.mode = 'over';
+        }
     }
 };
 
