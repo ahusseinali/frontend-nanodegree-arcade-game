@@ -595,7 +595,7 @@ function transformEntityLocToPic(location) {
     };
 }
 
-// Convert seconds to remainign time ss.MMM
+// Convert seconds to remaining time ss.MMM
 function convertTime(seconds) {
     var s = seconds;
     var m = Math.floor(s / 60);
