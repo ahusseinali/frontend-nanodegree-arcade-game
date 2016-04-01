@@ -1,6 +1,7 @@
 // Constants
 // Defines the game time in seconds.
 var GAME_TIME = 90;
+
 // Defines the shift required in entity location (in pixels) to place it correctly.
 var IMAGE_LOCATION_SHIFT = 28;
 
@@ -21,10 +22,9 @@ var CANVAS_TILES = {
 
 // Base class for all entities in game
 var Entity = function(sprite, dim) {
-    // The sprite used to display entity.
     this.sprite = sprite;
-    this.dim = dim;
-    this.loc = {x: 0, y: 0};
+    this.dim = dim;     // Dimensions of the entity in the form of {x: width, y: height}
+    this.loc = {x: 0, y: 0};    // Location of the entity
 };
 
 // Display entity in canvas
@@ -49,6 +49,8 @@ Enemy.prototype.constructor = Enemy;
 // Initialize Location to be outside Canvas to the left at random row from 1-3
 // Initialize speed to be random value between 200 and 450
 Enemy.prototype.initLocationAndSpeed = function() {
+    // Enemy is initialized on the left side of the canvas (outside the canvas)
+    // It should be located randomly in one of the rows 1 to 3 (inclusive) with 0 based index.
     this.loc = {
         x: TILE_DIM.x * -1,
         y: TILE_DIM.y * Math.floor(Math.random() * 3 + 1)
@@ -60,9 +62,7 @@ Enemy.prototype.initLocationAndSpeed = function() {
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt, player) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
+    // Multiply speed by dt to ensure that it runs at any frame rate properly.
     this.loc.x += this.speed * dt;
 
     // Check if enemy collides with player. Set Player isHit flag if collision happens.
