@@ -357,7 +357,6 @@ PlayerSelectController = function() {
 
 // Manage rendering of all static players.
 PlayerSelectController.prototype.render = function() {
-    // Clear the canvas and draw all static players
     this.staticPlayers.forEach(function(player) {
         player.render();
     });
@@ -391,6 +390,8 @@ PlayerSelectController.prototype.resetSelection = function() {
 PlayerSelectController.prototype._loadPlayers = function() {
     var initX = 25;  // Margin to the right and left of all sprites
     var initY = 243; // (Canvas Height - Static Player Height) / 2
+    // Width of each player area is calculated dividing Canvas width equally among players
+    // Need to account for margin to the left and right (25 * 2)
     var step = Math.floor((CANVAS_TILES.cols * TILE_DIM.x - 50) / this.playerSprites.length);
 
     var controller = this;
@@ -411,7 +412,8 @@ PlayerSelectController.prototype._loadPlayers = function() {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
 };
 
-// Change the selected player
+// Change the selected player to be pointing to the new index.
+// Make sure new index is within range by using modulus of the index.
 PlayerSelectController.prototype._changeSelectedPlayer = function(newIndex) {
     this.staticPlayers[this.selectedPlayerIndex].toggleSelect();
     this.selectedPlayerIndex = newIndex < 0 ?
@@ -421,7 +423,10 @@ PlayerSelectController.prototype._changeSelectedPlayer = function(newIndex) {
 };
 
 // GameController handles update and render requests and pass it to the proper objects
-// Modes include: select, game
+// Modes include:
+// - 'select' to select a player
+// - 'game' to play the game
+// - 'over' when game is over
 GameController = function() {
     this.mode = 'select';
     this.map = null;
@@ -433,6 +438,7 @@ GameController = function() {
 };
 
 // Update enemies position and player position in game mode.
+// Keep track of time and finish game when time is up.
 GameController.prototype.update = function(dt) {
     if(this.mode == 'game') {
         this.time -= dt;
@@ -443,7 +449,6 @@ GameController.prototype.update = function(dt) {
         this.player.update();
         this.textController.update(this.time, this.player.score);
 
-        // Finish Game if time is over
         if(this.time <= 0) {
             this.mode = 'over';
         }
@@ -456,7 +461,6 @@ GameController.prototype.render = function() {
     if(this.mode == 'select') {
         this.playerSelectController.render();
     } else {
-        //Render the map, then render enemies and player
         this.map.render();
         this.allEnemies.forEach(function(enemy) {
             enemy.render();
