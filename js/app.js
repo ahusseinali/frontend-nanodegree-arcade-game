@@ -312,6 +312,8 @@ TextController.prototype.render = function(gameMode) {
 // Define static player sprites. This is used to select player when the game starts.
 StaticPlayer = function(sprite, loc, dim) {
     this.sprite = sprite;
+    // Image to identify selected character
+    this.selector = 'images/Selector.png';
     this.loc = loc;
     this.dim = dim;
 
@@ -326,18 +328,16 @@ StaticPlayer.prototype.toggleSelect = function() {
 
 // Draw the static player sprite in canvas.
 StaticPlayer.prototype.render = function() {
-    if(this.selected) {
-        ctx.strokeStyle = 'red';
-        ctx.strokeRect(this.loc.x, this.loc.y, this.dim.x, this.dim.y);
-    }
-
-    // Centralize the sprite in the rectangle space.
+    // Centralize the sprite in the rectanglular space.
     var imgLoc = {
         x: this.loc.x - 5,
         y: this.loc.y - 15
     };
 
     imgLoc = transformEntityLocToPic(imgLoc);
+    if(this.selected) {
+        ctx.drawImage(Resources.get(this.selector), imgLoc.x, imgLoc.y);
+    }
     ctx.drawImage(Resources.get(this.sprite), imgLoc.x, imgLoc.y);
 };
 
