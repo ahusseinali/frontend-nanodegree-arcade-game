@@ -310,12 +310,11 @@ TextController.prototype.render = function(gameMode) {
 };
 
 // Define static player sprites. This is used to select player when the game starts.
-StaticPlayer = function(sprite, loc, dim) {
+StaticPlayer = function(sprite, loc) {
     this.sprite = sprite;
     // Image to identify selected character
     this.selector = 'images/Selector.png';
     this.loc = loc;
-    this.dim = dim;
 
     // specify if player is selected or not.
     this.selected = false;
@@ -400,11 +399,7 @@ PlayerSelectController.prototype._loadPlayers = function() {
             x: initX,
             y: initY
         };
-        var dim = {
-            x: step,
-            y: 120
-        };
-        controller.staticPlayers.push(new StaticPlayer(sprite, loc, dim));
+        controller.staticPlayers.push(new StaticPlayer(sprite, loc));
         initX += step;
     });
 
